@@ -1,0 +1,17 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_ARITH.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+ENTITY control IS
+	PORT (
+		
+		);
+END control;
+
+ARCHITECTURE comportamento OF control IS
+
+BEGIN
+
+
+END comportamento;

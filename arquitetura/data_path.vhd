@@ -1,0 +1,17 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.STD_LOGIC_ARITH.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+ENTITY data_path IS
+	PORT (
+		
+		);
+END data_path;
+
+ARCHITECTURE comportamento OF data_path IS
+
+BEGIN
+
+
+END comportamento;
