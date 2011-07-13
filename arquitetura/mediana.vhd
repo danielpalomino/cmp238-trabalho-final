@@ -12,19 +12,34 @@ END mediana;
 
 ARCHITECTURE comportamento OF mediana IS
 
-	SIGNAL comp_ab, comp_bc, comp_ca : STD_LOGIC_VECTOR(7 DOWNTO 0);
+	SIGNAL comp_ab, comp_bc, comp_ca : STD_LOGIC;
 	SIGNAL r_comp : STD_LOGIC_VECTOR(2 DOWNTO 0);
 
 BEGIN
 
-	comp_ab <= a - b; -- MENOR: A(1) B(0)
-	comp_bc <= b - c; -- MENOR: B(1) C(0)
-	comp_ca <= c - a; -- MENOR: C(1) A(0)
-
-	r_comp(2) <= comp_ab(7);
-	r_comp(1) <= comp_bc(7);
-	r_comp(0) <= comp_ca(7);
-
+	r_comp(2) <= comp_ab;
+	r_comp(1) <= comp_bc;
+	r_comp(0) <= comp_ca;
+	
+	PROCESS(a, b, c)
+	BEGIN
+	  IF a < b THEN
+	    comp_ab <= '1';
+	  ELSE
+	    comp_ab <= '0';
+	  END IF;
+	  IF b < c THEN
+	    comp_bc <= '1';
+	  ELSE
+	    comp_bc <= '0';
+	  END IF;	  
+	  IF c < a THEN
+	    comp_ca <= '1';
+	  ELSE
+	    comp_ca <= '0';
+	  END IF;
+	END PROCESS;
+	
 	-- B < A < C : 010 (SAIDA A)
 	-- C < A < B : 101 (SAIDA A)
 	-- A < B < C : 110 (SAIDA B)

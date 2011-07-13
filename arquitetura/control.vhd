@@ -40,8 +40,8 @@ BEGIN
 	BEGIN
 		CASE estado IS
 		WHEN inicio =>
-			px <= "00000010";
-			py <= "00000010";
+			px <= "00000000";
+			py <= "00000000";
 			we <= '0';
 			enable_reg_A <= '0';
 			enable_reg_B <= '0';
@@ -50,7 +50,7 @@ BEGIN
 			enable_reg1 <= '0';
 			enable_reg2 <= '0';
 			enable_reg3 <= '0';
-			p_mem <= "00000011";
+			p_mem <= "00000001";
 			memory_address <= (OTHERS=>'0');
 			proximo <= idle;
 			
@@ -126,6 +126,7 @@ BEGIN
 			--ENABLE MUX BYPASS
 			px <= px + "00000001";
 			proximo <= idle;
+			enable_reg0 <= '1';
 			
 		WHEN loadA =>
 			enable_reg_A <= '1';
@@ -146,6 +147,9 @@ BEGIN
 			proximo <= loadC;
 			memory_address <= p_mem;
 			
+			--desabilitar
+		  enable_reg_A <= '0';	
+			
 		WHEN loadC =>
 			enable_reg_C <= '1';
 			proximo <= computa0;
@@ -154,6 +158,8 @@ BEGIN
       ELSE 
         memory_address <= p_mem + "00000010";        
       END IF;
+      --desabilitar
+		  enable_reg_B <= '0';
 			
 		WHEN carga_reg_ABC =>
 			enable_reg_A <= '1';
@@ -169,8 +175,16 @@ BEGIN
 			enable_reg_B <= '1';
 			enable_reg_C <= '1';
 			proximo <= computa0;
+			--desabilitar
+			enable_reg_A <= '0';
+			
 		WHEN computa0 =>
 			proximo <= computa1;
+			--desabilitar
+		  enable_reg_A <= '0';
+			enable_reg_B <= '0';
+			enable_reg_C <= '0';
+		  
 		WHEN computa1 =>
 		  proximo <= carga_regs;	
 			
@@ -190,12 +204,28 @@ BEGIN
 		  ELSE
 		    proximo <= idle;
 		  END IF;
+		  CASE block_type IS
+			  WHEN "00" =>
+			    px <= px + "00000001";
+			  WHEN "01" =>
+			    px <= px - "00000001";
+			    py <= py + "00000001";
+			  WHEN "10" =>
+			    px <= px + "00000001";
+			  WHEN OTHERS =>
+			    px <= px + "00000001";
+			    py <= py - "00000001";
+			END CASE;
 			
 		WHEN refresh1 =>
 			mux_write_memory <= "00";
 			memory_address <= "11110001"; --241
 			we <= '1';
 			proximo <= refresh2;
+			
+			--desabilitar 
+			enable_reg3 <= '0';
+			
 		WHEN refresh2 =>
 			mux_write_memory <= "01";
 			memory_address <= p_mem - "00000001";
@@ -211,18 +241,7 @@ BEGIN
 			memory_address <= p_mem;
 			we <= '1';
 			proximo <= idle;
-			CASE block_type IS
-			  WHEN "00" =>
-			    px <= px + "00000001";
-			  WHEN "01" =>
-			    px <= px - "00000001";
-			    py <= py + "00000001";
-			  WHEN "10" =>
-			    px <= px + "00000001";
-			  WHEN OTHERS =>
-			    px <= px + "00000001";
-			    py <= py - "00000001";
-			END CASE;
+			
 			IF block_type = "11" THEN
 			  p_mem <= p_mem + "00000010";
 			END IF;

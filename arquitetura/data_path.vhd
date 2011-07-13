@@ -22,32 +22,36 @@ END data_path;
 
 ARCHITECTURE comportamento OF data_path IS
 
-	SIGNAL regx_a, regx_b, regx_c, regx_s : STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL regy_a, regy_b, regy_c, regy_s : STD_LOGIC_VECTOR(7 DOWNTO 0);
 	SIGNAL mux_reg_A, mux_reg_B, mux_reg_C, reg_A, reg_B, reg_C, reg_0, reg_1, reg_2, reg_3, reg_mediana: motion_vector;
-	SIGNAL mem_data_out, mem_data_in , out_mediana, diff: motion_vector;
+	SIGNAL mem_data_out, mem_data_in , out_mediana, diff, reg_mv_in: motion_vector;
 
 BEGIN
 
+  IREG_MV_IN : reg_mv PORT MAP (
+		clk => clk,
+		reset => reset,
+		carga => '1',
+		d => mv_in,
+		q => reg_mv_in
+	);
 	--MUX - ENTRADA A
-
 	WITH mux_A SELECT
 		mux_reg_A <= mem_data_out WHEN "00",
 					 reg_0 WHEN "01",
 					 reg_2 WHEN "10",
-					 ("11111111","11111111") WHEN OTHERS; --MIN
+					 ("00000000","00000000") WHEN OTHERS; --MIN
 
 	WITH mux_B SELECT
 		mux_reg_B <= mem_data_out WHEN "00",
 					 reg_0 WHEN "01",
 					 reg_1 WHEN "10",
-					 ("11111111","11111111") WHEN OTHERS;
+					 ("00000000","00000000") WHEN OTHERS;
 
 	WITH mux_C SELECT
 		mux_reg_C <= mem_data_out WHEN "00",
 					 reg_1 WHEN "01",
 					 reg_0 WHEN "10",
-					 ("01111111","01111111") WHEN OTHERS;
+					 ("00111111","00111111") WHEN OTHERS;
 
 	IREG_A : reg_mv PORT MAP (
 		clk => clk,
@@ -77,7 +81,7 @@ BEGIN
 		clk => clk,
 		reset => reset,
 		carga => enable_reg0,
-		d => mv_in,
+		d => reg_mv_in,
 		q => reg_0
 	);
 
@@ -85,7 +89,7 @@ BEGIN
 		clk => clk,
 		reset => reset,
 		carga => enable_reg1,
-		d => mv_in,
+		d => reg_mv_in,
 		q => reg_1
 	);
 
@@ -93,7 +97,7 @@ BEGIN
 		clk => clk,
 		reset => reset,
 		carga => enable_reg2,
-		d => mv_in,
+		d => reg_mv_in,
 		q => reg_2
 	);
 
@@ -101,7 +105,7 @@ BEGIN
 		clk => clk,
 		reset => reset,
 		carga => enable_reg3,
-		d => mv_in,
+		d => reg_mv_in,
 		q => reg_3
 	);
 
