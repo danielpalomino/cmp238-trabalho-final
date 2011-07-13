@@ -12,7 +12,7 @@ ENTITY data_path IS
 		we: IN STD_LOGIC;
 		enable_reg_A, enable_reg_B, enable_reg_C: IN STD_LOGIC;
 		enable_reg0, enable_reg1, enable_reg2, enable_reg3: IN STD_LOGIC;
-		mux_A, mux_B, mux_C, mux_write_memory: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		mux_A, mux_B, mux_C, mux_write_memory, mux_bypass: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 		memory_address: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 		mv_in : IN motion_vector;
@@ -23,7 +23,7 @@ END data_path;
 ARCHITECTURE comportamento OF data_path IS
 
 	SIGNAL mux_reg_A, mux_reg_B, mux_reg_C, reg_A, reg_B, reg_C, reg_0, reg_1, reg_2, reg_3, reg_mediana: motion_vector;
-	SIGNAL mem_data_out, mem_data_in , out_mediana, diff, reg_mv_in: motion_vector;
+	SIGNAL mem_data_out, mem_data_in , out_mediana, diff, reg_mv_in, reg_mvd_out: motion_vector;
 
 BEGIN
 
@@ -39,19 +39,19 @@ BEGIN
 		mux_reg_A <= mem_data_out WHEN "00",
 					 reg_0 WHEN "01",
 					 reg_2 WHEN "10",
-					 ("00000000","00000000") WHEN OTHERS; --MIN
+					 ("10000000","10000000") WHEN OTHERS; --MIN
 
 	WITH mux_B SELECT
 		mux_reg_B <= mem_data_out WHEN "00",
 					 reg_0 WHEN "01",
 					 reg_1 WHEN "10",
-					 ("00000000","00000000") WHEN OTHERS;
+					 ("10000000","10000000") WHEN OTHERS;
 
 	WITH mux_C SELECT
 		mux_reg_C <= mem_data_out WHEN "00",
 					 reg_1 WHEN "01",
 					 reg_0 WHEN "10",
-					 ("00111111","00111111") WHEN OTHERS;
+					 ("01111111","01111111") WHEN OTHERS;
 
 	IREG_A : reg_mv PORT MAP (
 		clk => clk,
@@ -147,12 +147,16 @@ BEGIN
 
 	diff(0) <= mv_in(0) - reg_mediana(0);
 	diff(1) <= mv_in(1) - reg_mediana(1);
+	
+	WITH mux_bypass SELECT
+	  reg_mvd_out <= diff WHEN "00",
+	               reg_mv_in WHEN OTHERS;
 
 	IREG_MVD : reg_mv PORT MAP (
 		clk => clk,
 		reset => reset,
 		carga => '1', --TODO check it
-		d => diff,
+		d => reg_mvd_out,
 		q => mvd_out
 	);
 

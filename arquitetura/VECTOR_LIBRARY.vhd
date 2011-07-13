@@ -38,7 +38,7 @@ PACKAGE VECTOR_LIBRARY IS
 		we: IN STD_LOGIC;
 		enable_reg_A, enable_reg_B, enable_reg_C: IN STD_LOGIC;
 		enable_reg0, enable_reg1, enable_reg2, enable_reg3: IN STD_LOGIC;
-		mux_A, mux_B, mux_C, mux_write_memory: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		mux_A, mux_B, mux_C, mux_write_memory, mux_bypass: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 		memory_address: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 		mv_in : IN motion_vector;
@@ -53,8 +53,9 @@ PACKAGE VECTOR_LIBRARY IS
 			we: OUT STD_LOGIC;
 			enable_reg_A, enable_reg_B, enable_reg_C: OUT STD_LOGIC;
 			enable_reg0, enable_reg1, enable_reg2, enable_reg3: OUT STD_LOGIC;
-			mux_A, mux_B, mux_C, mux_write_memory: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-			memory_address: OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+			mux_A, mux_B, mux_C, mux_write_memory, mux_bypass: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+			memory_address: OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+			done : OUT STD_LOGIC
 		);
 	END COMPONENT;
 

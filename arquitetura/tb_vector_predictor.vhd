@@ -21,6 +21,7 @@ ARCHITECTURE behavior OF tb_vector_predictor IS
 			start : IN  std_logic;
 			block_type : IN  std_logic_vector(1 downto 0);
 			mv_in : IN  motion_vector;
+			done : OUT STD_LOGIC;
 			mv_out : OUT  motion_vector
 		);
 END COMPONENT;
@@ -41,11 +42,13 @@ END COMPONENT;
    signal start : std_logic := '0';
    signal block_type : std_logic_vector(1 downto 0) := (others => '0');
    signal mv_in : motion_vector;
+   
 
  	--Outputs
    signal mv_out : motion_vector;
+   signal done : STD_LOGIC;
 	
-	signal EOF : std_logic;
+  	signal EOF : std_logic;
 
    -- Clock period definitions
    constant clk_period : time := 20ns;
@@ -67,7 +70,8 @@ BEGIN
           start => start,
           block_type => block_type,
           mv_in => mv_in,
-          mv_out => mv_out
+          mv_out => mv_out,
+          done => done
         );
 
    -- Clock process definitions

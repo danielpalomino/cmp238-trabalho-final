@@ -12,8 +12,9 @@ ENTITY control IS
 			we: OUT STD_LOGIC;
 			enable_reg_A, enable_reg_B, enable_reg_C: OUT STD_LOGIC;
 			enable_reg0, enable_reg1, enable_reg2, enable_reg3: OUT STD_LOGIC;
-			mux_A, mux_B, mux_C, mux_write_memory: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-			memory_address: OUT STD_LOGIC_VECTOR(7 DOWNTO 0)
+			mux_A, mux_B, mux_C, mux_write_memory, mux_bypass: OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
+			memory_address: OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+			done : OUT STD_LOGIC
 		);
 END control;
 
@@ -52,6 +53,8 @@ BEGIN
 			enable_reg3 <= '0';
 			p_mem <= "00000001";
 			memory_address <= (OTHERS=>'0');
+			done <= '0';
+			
 			proximo <= idle;
 			
 		WHEN idle =>
@@ -68,6 +71,9 @@ BEGIN
 			enable_reg1 <= '0';
 			enable_reg2 <= '0';
 			enable_reg3 <= '0';
+			mux_bypass <= "00";
+			--desabilitar
+			done <= '0';
 			
 		WHEN set_mux =>
 			CASE block_type IS
@@ -122,11 +128,14 @@ BEGIN
 			ELSE --(px != "00000000" AND (block_type = "00")) THEN
 				proximo <= loadA;
 			END IF;
+			
 		WHEN bypass =>
 			--ENABLE MUX BYPASS
 			px <= px + "00000001";
-			proximo <= idle;
+			mux_bypass <= "01";
 			enable_reg0 <= '1';
+			done <= '1';
+			proximo <= idle;
 			
 		WHEN loadA =>
 			enable_reg_A <= '1';
@@ -154,7 +163,9 @@ BEGIN
 			enable_reg_C <= '1';
 			proximo <= computa0;
 			IF block_type = "00" THEN
-			 memory_address <= p_mem + "00000001";
+			  memory_address <= p_mem + "00000001";
+      ELSIF block_type = "01" AND px = "11101111" THEN  --controle de fim de linha
+        memory_address <= p_mem;
       ELSE 
         memory_address <= p_mem + "00000010";        
       END IF;
@@ -186,8 +197,8 @@ BEGIN
 			enable_reg_C <= '0';
 		  
 		WHEN computa1 =>
-		  proximo <= carga_regs;	
-			
+		  proximo <= carga_regs;
+		  			
 		WHEN carga_regs =>
 		  CASE block_type IS
       WHEN "00" =>
@@ -204,6 +215,11 @@ BEGIN
 		  ELSE
 		    proximo <= idle;
 		  END IF;
+		  
+		  IF px = "11101111" AND block_type = "11" THEN --controle de fim de liha
+		    px <= "00000000";
+			  py <= py + "00000001";
+			ELSE
 		  CASE block_type IS
 			  WHEN "00" =>
 			    px <= px + "00000001";
@@ -216,7 +232,11 @@ BEGIN
 			    px <= px + "00000001";
 			    py <= py - "00000001";
 			END CASE;
+			END IF;
 			
+			done <= '1';
+			
+					
 		WHEN refresh1 =>
 			mux_write_memory <= "00";
 			memory_address <= "11110001"; --241
@@ -225,6 +245,7 @@ BEGIN
 			
 			--desabilitar 
 			enable_reg3 <= '0';
+			done <= '0';
 			
 		WHEN refresh2 =>
 			mux_write_memory <= "01";
