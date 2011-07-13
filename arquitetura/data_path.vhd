@@ -2,8 +2,8 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.STD_LOGIC_ARITH.ALL;
 USE IEEE.STD_LOGIC_UNSIGNED.ALL;
-LIBRARY work;
-USE work.VECTOR_LIBRARY.all;
+LIBRARY WORK;
+USE WORK.VECTOR_LIBRARY.ALL;
 
 ENTITY data_path IS
 	PORT (
@@ -13,10 +13,10 @@ ENTITY data_path IS
 		enable_reg_A, enable_reg_B, enable_reg_C: IN STD_LOGIC;
 		enable_reg0, enable_reg1, enable_reg2, enable_reg3: IN STD_LOGIC;
 		mux_A, mux_B, mux_C, mux_write_memory: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-		memory_address: IN STD_LOGIC_VECTOR(7 DOWNTO 0)
+		memory_address: IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 
 		mv_in : IN motion_vector;
-		mvd_out : OUT motion_vector;
+		mvd_out : OUT motion_vector
 	);
 END data_path;
 
@@ -24,7 +24,8 @@ ARCHITECTURE comportamento OF data_path IS
 
 	SIGNAL regx_a, regx_b, regx_c, regx_s : STD_LOGIC_VECTOR(7 DOWNTO 0);
 	SIGNAL regy_a, regy_b, regy_c, regy_s : STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL mux_reg_A, mux_reg_B, mux_reg_C, reg_A, reg_B, reg_C, reg_0, reg_1, reg_2, reg_3 : motion_vector;
+	SIGNAL mux_reg_A, mux_reg_B, mux_reg_C, reg_A, reg_B, reg_C, reg_0, reg_1, reg_2, reg_3, reg_mediana: motion_vector;
+	SIGNAL mem_data_out, mem_data_in , out_mediana, diff: motion_vector;
 
 BEGIN
 
@@ -104,7 +105,7 @@ BEGIN
 		q => reg_3
 	);
 
-	--MUX PARA A PORTA DE ESCRITA DA MEMÓRIA
+	--MUX PARA A PORTA DE ESCRITA DA MEMRIA
 	WITH mux_write_memory SELECT
 		mem_data_in <= reg_1 WHEN "00",
 					   reg_2 WHEN "01",
@@ -141,7 +142,7 @@ BEGIN
 	);
 
 	diff(0) <= mv_in(0) - reg_mediana(0);
-	diff(1) <= mn_in(1) - reg_mediana(1);
+	diff(1) <= mv_in(1) - reg_mediana(1);
 
 	IREG_MVD : reg_mv PORT MAP (
 		clk => clk,

@@ -20,12 +20,10 @@ BEGIN
 	PROCESS(clk, reset)
 	BEGIN
 		IF reset = '1' THEN
-			q <= (OTHERS => '0');
+			q <= ((OTHERS => '0'),(OTHERS => '0'));
 		ELSIF clk'EVENT AND clk = '1' THEN
 			IF carga = '1' THEN
 				q <= d;
-			ELSE
-				q <= q;
 			END IF;
 		END IF;
 	END PROCESS;	
