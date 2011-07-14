@@ -18,8 +18,8 @@ PACKAGE VECTOR_LIBRARY IS
 		clk : IN STD_LOGIC;
 		w_en : IN STD_LOGIC;
 		address : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-		data_in : IN motion_vector;
-		data_out : OUT motion_vector
+		data_in : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+		data_out : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
 	);
 	END COMPONENT;
 

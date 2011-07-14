@@ -24,6 +24,7 @@ ARCHITECTURE comportamento OF data_path IS
 
 	SIGNAL mux_reg_A, mux_reg_B, mux_reg_C, reg_A, reg_B, reg_C, reg_0, reg_1, reg_2, reg_3, reg_mediana: motion_vector;
 	SIGNAL mem_data_out, mem_data_in , out_mediana, diff, reg_mv_in, reg_mvd_out: motion_vector;
+	SIGNAL temp_mem_out, temp_mem_in: STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 BEGIN
 
@@ -119,9 +120,15 @@ BEGIN
 		clk => clk,
 		w_en => we,
 		address => memory_address,
-		data_in => mem_data_in,
-		data_out => mem_data_out
+		data_in => temp_mem_in,
+		data_out => temp_mem_out
 	);
+	
+	mem_data_in(0) <= temp_mem_in(15 DOWNTO 8);
+	mem_data_in(1) <= temp_mem_in(7 DOWNTO 0);
+	
+	mem_data_out(0) <= temp_mem_out(15 DOWNTO 8);
+	mem_data_out(1) <= temp_mem_out(7 DOWNTO 0);
 
 	MEDIANA_X: mediana PORT MAP (
 		a => reg_A(0),
