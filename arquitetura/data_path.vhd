@@ -124,8 +124,8 @@ BEGIN
 		data_out => temp_mem_out
 	);
 	
-	mem_data_in(0) <= temp_mem_in(15 DOWNTO 8);
-	mem_data_in(1) <= temp_mem_in(7 DOWNTO 0);
+	temp_mem_in(15 DOWNTO 8) <= mem_data_in(0);
+	temp_mem_in(7 DOWNTO 0) <= mem_data_in(1);
 	
 	mem_data_out(0) <= temp_mem_out(15 DOWNTO 8);
 	mem_data_out(1) <= temp_mem_out(7 DOWNTO 0);
